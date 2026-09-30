@@ -1,0 +1,11 @@
+name: atividade-avaliativa-paradigma-imperativo
+version: 0.1.0
+
+authors:
+  - johnpgr <jp.greidinger@hotmail.com>
+
+targets:
+  paradigma-imperativo:
+    main: src/main.cr
+
+crystal: '>= 1.21.1'
