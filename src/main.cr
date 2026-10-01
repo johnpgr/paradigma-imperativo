@@ -1,51 +1,43 @@
-# Projeto: Sistema de controle de estoque e vendas
-#
-# entidades: Produto, Saldo, Venda
-# transformations:
-#   - saida, entrada, cadastro
-# actions:
-#   - consulta de saldo, calculo do valor das vendas
-require "colorize"
+# Sistema de controle de estoque e vendas
+require "./terminal"
 
-HIDE_CURSOR  = "\e[?25l"
-SHOW_CURSOR  = "\e[?25h"
-CLEAR_SCREEN = "\e[2J\e[H"
-NEWLINE      = "\r\n"
+menu_selected = 0
+menu_items = ["Sair"]
 
-selected = 0
-items = ["Adicionar", "Listar", "Remover", "Sair"]
+at_exit { print SHOW_CURSOR }
+Signal::INT.trap { exit }
 
-begin
+loop do
+  # 1. Desenhar a tela baseado no estado atual
   print HIDE_CURSOR
-  STDIN.raw do
-    loop do
-      # 1. Desenhar a tela baseado no estado atual
-      print CLEAR_SCREEN
+  print CLEAR_SCREEN
+  puts "Controle de Estoque e Vendas".colorize.bold
+  puts "(j/k: mover, Enter: selecionar, q: sair)\n\n"
 
-      items.each_with_index do |item, index|
-        if index == selected
-          print "> #{item}".colorize(:green)
-        else
-          print "  #{item}"
-        end
-
-        print NEWLINE
-      end
-
-      # 2. Ler o input
-      key = STDIN.read_char
-      case key
-      when 'j'
-        selected = (selected + 1) % items.size
-      when 'k'
-        selected = (selected - 1) % items.size
-      when 'q', '\u{3}'
-        break
-      end
-
-      # executar acao
+  menu_items.each_with_index do |item, index|
+    if index == menu_selected
+      puts "> #{item}".colorize(:green)
+    else
+      puts "  #{item}"
     end
   end
-ensure
-  print SHOW_CURSOR
+
+  # 2. Ler o input
+  case read_key
+  when 'j'
+    menu_selected = (menu_selected + 1) % menu_items.size
+  when 'k'
+    menu_selected = (menu_selected - 1) % menu_items.size
+  when 'q', '\u{3}'
+    break
+  when '\r', '\n'
+    # 3. Executar a ação selecionada
+    print CLEAR_SCREEN
+    print SHOW_CURSOR
+    case menu_items[menu_selected]
+    when "Sair"
+      break
+    end
+    wait_for_key
+  end
 end
