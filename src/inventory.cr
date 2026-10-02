@@ -1,6 +1,8 @@
 LOW_STOCK = 5
 
-# Classe (e não struct) para que alterar a quantidade altere o produto guardado no array.
+# Classe (e não struct ou record) porque `record` em Crystal expande para uma struct
+# (tipo por valor). Usamos classe (tipo por referência) para que alterações de saldo
+# (`product.quantity += n`) modifiquem diretamente a instância guardada no array.
 class Product
   property code : Int32
   property name : String
@@ -26,53 +28,63 @@ def register_product(products : Array(Product), name : String, price : Float64, 
   end
 
   products << Product.new(next_code, name, price, quantity)
-  nil
+
+  return nil
 end
 
 def find_product(products : Array(Product), code : Int32) : Product?
   products.each do |product|
     return product if product.code == code
   end
-  nil
+
+  return nil
 end
 
 def register_entry(products : Array(Product), code : Int32, quantity : Int32) : String?
   product = find_product(products, code)
+
   return "Produto não encontrado." unless product
   return "A quantidade deve ser maior que zero." if quantity <= 0
 
   product.quantity += quantity
-  nil
+
+  return nil
 end
 
 def register_sale(products : Array(Product), sales : Array(Sale), code : Int32, quantity : Int32) : String?
   product = find_product(products, code)
+
   return "Produto não encontrado." unless product
   return "A quantidade deve ser maior que zero." if quantity <= 0
   return "Saldo insuficiente: #{product.quantity} em estoque." if quantity > product.quantity
 
   product.quantity -= quantity
   sales << Sale.new(product.code, product.name, quantity, quantity * product.price)
-  nil
+
+  return nil
 end
 
 # Retorna {itens vendidos, valor total}.
 def sales_summary(sales : Array(Sale)) : {Int32, Float64}
   items = 0
   total = 0.0
+
   sales.each do |sale|
     items += sale.quantity
     total += sale.total
   end
-  {items, total}
+
+  return {items, total}
 end
 
 # Só remove com saldo zero, para não perder estoque sem registro.
 def remove_product(products : Array(Product), code : Int32) : String?
   product = find_product(products, code)
+
   return "Produto não encontrado." unless product
   return "Só é possível remover produtos com saldo zero." if product.quantity > 0
 
   products.delete(product)
-  nil
+
+  return nil
 end

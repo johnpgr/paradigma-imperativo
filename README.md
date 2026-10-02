@@ -124,9 +124,10 @@ return "Saldo insuficiente: #{product.quantity} em estoque." if quantity > produ
 | `register_sale` | `src/inventory.cr:48` | Diminui o saldo e registra a venda |
 | `sales_summary` | `src/inventory.cr:60` | Calcula os itens vendidos e o valor total |
 | `remove_product` | `src/inventory.cr:71` | Remove um produto com saldo zero |
-| `read_key` | `src/terminal.cr:8` | Lê uma tecla sem esperar o Enter |
-| `prompt`, `prompt_int`, `prompt_float` | `src/terminal.cr:12-31` | Leem um texto ou um número |
-| `print_result` | `src/terminal.cr:38` | Mostra a mensagem de sucesso ou de erro |
+| `hide_cursor`, `show_cursor`, `clear_screen` | `src/terminal.cr:7-17` | Controlam visibilidade do cursor e limpeza de tela |
+| `read_key` | `src/terminal.cr:20` | Lê uma tecla sem esperar o Enter |
+| `prompt`, `prompt_int`, `prompt_float` | `src/terminal.cr:24-43` | Leem um texto ou um número |
+| `print_result` | `src/terminal.cr:50` | Mostra a mensagem de sucesso ou de erro |
 
 Os procedimentos que alteram o estado retornam `String?`: uma mensagem de erro, ou `nil` quando a operação é realizada. Assim, `main.cr` trata o resultado de todas as operações da mesma forma, com `print_result`.
 

@@ -4,6 +4,18 @@ HIDE_CURSOR  = "\e[?25l"
 SHOW_CURSOR  = "\e[?25h"
 CLEAR_SCREEN = "\e[2J\e[H"
 
+def hide_cursor
+  print HIDE_CURSOR
+end
+
+def show_cursor
+  print SHOW_CURSOR
+end
+
+def clear_screen
+  print CLEAR_SCREEN
+end
+
 # O modo raw é usado só para ler uma tecla; os formulários usam leitura por linha.
 def read_key : Char?
   STDIN.raw &.read_char
@@ -18,6 +30,7 @@ def prompt_int(label : String) : Int32
   loop do
     value = prompt(label).to_i?
     return value if value
+
     puts "Digite um número inteiro.".colorize(:red)
   end
 end
@@ -26,6 +39,7 @@ def prompt_float(label : String) : Float64
   loop do
     value = prompt(label).to_f?
     return value if value
+
     puts "Digite um número.".colorize(:red)
   end
 end
