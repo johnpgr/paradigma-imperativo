@@ -3,8 +3,9 @@ require "./terminal"
 require "./inventory"
 
 menu_selected = 0
-menu_items = ["Cadastrar produto", "Listar produtos", "Registrar entrada", "Sair"]
+menu_items = ["Cadastrar produto", "Listar produtos", "Registrar entrada", "Registrar venda", "Sair"]
 products = [] of Product
+sales = [] of Sale
 
 at_exit { print SHOW_CURSOR }
 Signal::INT.trap { exit }
@@ -57,6 +58,10 @@ loop do
       code = prompt_int("Código do produto: ")
       quantity = prompt_int("Quantidade recebida: ")
       print_result(register_entry(products, code, quantity))
+    when "Registrar venda"
+      code = prompt_int("Código do produto: ")
+      quantity = prompt_int("Quantidade vendida: ")
+      print_result(register_sale(products, sales, code, quantity))
     when "Sair"
       break
     end

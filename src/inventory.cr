@@ -11,6 +11,9 @@ class Product
   end
 end
 
+# O total é guardado na venda para não mudar se o preço do produto mudar depois.
+record Sale, code : Int32, name : String, quantity : Int32, total : Float64
+
 # Retorna uma mensagem de erro, ou nil quando a operação é realizada.
 def register_product(products : Array(Product), name : String, price : Float64, quantity : Int32) : String?
   return "O nome não pode ser vazio." if name.empty?
@@ -39,5 +42,16 @@ def register_entry(products : Array(Product), code : Int32, quantity : Int32) : 
   return "A quantidade deve ser maior que zero." if quantity <= 0
 
   product.quantity += quantity
+  nil
+end
+
+def register_sale(products : Array(Product), sales : Array(Sale), code : Int32, quantity : Int32) : String?
+  product = find_product(products, code)
+  return "Produto não encontrado." unless product
+  return "A quantidade deve ser maior que zero." if quantity <= 0
+  return "Saldo insuficiente: #{product.quantity} em estoque." if quantity > product.quantity
+
+  product.quantity -= quantity
+  sales << Sale.new(product.code, product.name, quantity, quantity * product.price)
   nil
 end
