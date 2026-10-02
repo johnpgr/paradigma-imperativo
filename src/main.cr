@@ -1,8 +1,10 @@
 # Sistema de controle de estoque e vendas
 require "./terminal"
+require "./inventory"
 
 menu_selected = 0
-menu_items = ["Sair"]
+menu_items = ["Cadastrar produto", "Listar produtos", "Sair"]
+products = [] of Product
 
 at_exit { print SHOW_CURSOR }
 Signal::INT.trap { exit }
@@ -35,6 +37,22 @@ loop do
     print CLEAR_SCREEN
     print SHOW_CURSOR
     case menu_items[menu_selected]
+    when "Cadastrar produto"
+      name = prompt("Nome: ")
+      price = prompt_float("Preço unitário: ")
+      quantity = prompt_int("Quantidade inicial: ")
+      print_result(register_product(products, name, price, quantity))
+    when "Listar produtos"
+      puts "%-7s %-20s %9s %8s" % {"Código", "Nome", "Preço", "Saldo"}
+      products.each do |product|
+        line = "%-7d %-20s %9.2f %8d" % {product.code, product.name, product.price, product.quantity}
+        if product.quantity <= LOW_STOCK
+          puts line.colorize(:red)
+        else
+          puts line
+        end
+      end
+      puts "\nNenhum produto cadastrado." if products.empty?
     when "Sair"
       break
     end

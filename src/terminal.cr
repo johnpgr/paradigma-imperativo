@@ -34,3 +34,11 @@ def wait_for_key
   print "\nPressione qualquer tecla para voltar..."
   read_key
 end
+
+def print_result(error : String?)
+  if error
+    puts error.colorize(:red)
+  else
+    puts "Operação realizada.".colorize(:green)
+  end
+end
