@@ -25,3 +25,19 @@ def register_product(products : Array(Product), name : String, price : Float64, 
   products << Product.new(next_code, name, price, quantity)
   nil
 end
+
+def find_product(products : Array(Product), code : Int32) : Product?
+  products.each do |product|
+    return product if product.code == code
+  end
+  nil
+end
+
+def register_entry(products : Array(Product), code : Int32, quantity : Int32) : String?
+  product = find_product(products, code)
+  return "Produto não encontrado." unless product
+  return "A quantidade deve ser maior que zero." if quantity <= 0
+
+  product.quantity += quantity
+  nil
+end

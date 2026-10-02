@@ -3,7 +3,7 @@ require "./terminal"
 require "./inventory"
 
 menu_selected = 0
-menu_items = ["Cadastrar produto", "Listar produtos", "Sair"]
+menu_items = ["Cadastrar produto", "Listar produtos", "Registrar entrada", "Sair"]
 products = [] of Product
 
 at_exit { print SHOW_CURSOR }
@@ -53,6 +53,10 @@ loop do
         end
       end
       puts "\nNenhum produto cadastrado." if products.empty?
+    when "Registrar entrada"
+      code = prompt_int("Código do produto: ")
+      quantity = prompt_int("Quantidade recebida: ")
+      print_result(register_entry(products, code, quantity))
     when "Sair"
       break
     end
