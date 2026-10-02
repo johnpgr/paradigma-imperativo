@@ -3,7 +3,7 @@ require "./terminal"
 require "./inventory"
 
 menu_selected = 0
-menu_items = ["Cadastrar produto", "Listar produtos", "Registrar entrada", "Registrar venda", "Relatório de vendas", "Sair"]
+menu_items = ["Cadastrar produto", "Listar produtos", "Registrar entrada", "Registrar venda", "Relatório de vendas", "Remover produto", "Sair"]
 products = [] of Product
 sales = [] of Sale
 
@@ -70,6 +70,9 @@ loop do
       items, total = sales_summary(sales)
       puts "\nItens vendidos: #{items}"
       puts "Valor total:    R$ #{"%.2f" % total}".colorize.bold
+    when "Remover produto"
+      code = prompt_int("Código do produto: ")
+      print_result(remove_product(products, code))
     when "Sair"
       break
     end

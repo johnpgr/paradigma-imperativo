@@ -66,3 +66,13 @@ def sales_summary(sales : Array(Sale)) : {Int32, Float64}
   end
   {items, total}
 end
+
+# Só remove com saldo zero, para não perder estoque sem registro.
+def remove_product(products : Array(Product), code : Int32) : String?
+  product = find_product(products, code)
+  return "Produto não encontrado." unless product
+  return "Só é possível remover produtos com saldo zero." if product.quantity > 0
+
+  products.delete(product)
+  nil
+end
