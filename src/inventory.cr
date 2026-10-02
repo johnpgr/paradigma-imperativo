@@ -55,3 +55,14 @@ def register_sale(products : Array(Product), sales : Array(Sale), code : Int32, 
   sales << Sale.new(product.code, product.name, quantity, quantity * product.price)
   nil
 end
+
+# Retorna {itens vendidos, valor total}.
+def sales_summary(sales : Array(Sale)) : {Int32, Float64}
+  items = 0
+  total = 0.0
+  sales.each do |sale|
+    items += sale.quantity
+    total += sale.total
+  end
+  {items, total}
+end

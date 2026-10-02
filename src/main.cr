@@ -3,7 +3,7 @@ require "./terminal"
 require "./inventory"
 
 menu_selected = 0
-menu_items = ["Cadastrar produto", "Listar produtos", "Registrar entrada", "Registrar venda", "Sair"]
+menu_items = ["Cadastrar produto", "Listar produtos", "Registrar entrada", "Registrar venda", "Relatório de vendas", "Sair"]
 products = [] of Product
 sales = [] of Sale
 
@@ -62,6 +62,14 @@ loop do
       code = prompt_int("Código do produto: ")
       quantity = prompt_int("Quantidade vendida: ")
       print_result(register_sale(products, sales, code, quantity))
+    when "Relatório de vendas"
+      puts "%-7s %-20s %5s %12s" % {"Código", "Produto", "Qtd.", "Total"}
+      sales.each do |sale|
+        puts "%-7d %-20s %5d %12.2f" % {sale.code, sale.name, sale.quantity, sale.total}
+      end
+      items, total = sales_summary(sales)
+      puts "\nItens vendidos: #{items}"
+      puts "Valor total:    R$ #{"%.2f" % total}".colorize.bold
     when "Sair"
       break
     end
