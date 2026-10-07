@@ -6,7 +6,10 @@ Atividade Avaliativa AV1 da disciplina Paradigmas de Programação (UNAMA). Prof
 
 **Linguagem:** [Crystal](https://crystal-lang.org), com autorização do professor no lugar de C ou Python.
 
-**Vídeo de demonstração:** LINK DO VÍDEO
+**Vídeo de demonstração:** 
+
+https://github.com/user-attachments/assets/c0e2dc87-ef2b-4403-9c99-d30d208b671e
+
 
 **Contribuição dos integrantes:** trabalho individual. Análise, implementação, README e vídeo feitos por João Paulo Greidinger dos Reis.
 
