@@ -1,8 +1,5 @@
 LOW_STOCK = 5
 
-# Classe (e não struct ou record) porque `record` em Crystal expande para uma struct
-# (tipo por valor). Usamos classe (tipo por referência) para que alterações de saldo
-# (`product.quantity += n`) modifiquem diretamente a instância guardada no array.
 class Product
   property code : Int32
   property name : String
@@ -13,8 +10,15 @@ class Product
   end
 end
 
-# O total é guardado na venda para não mudar se o preço do produto mudar depois.
-record Sale, code : Int32, name : String, quantity : Int32, total : Float64
+struct Sale
+  property code : Int32
+  property name : String
+  property quantity : Int32
+  property total : Float64
+
+  def initialize(@code, @name, @quantity, @total)
+  end
+end
 
 # Retorna uma mensagem de erro, ou nil quando a operação é realizada.
 def register_product(products : Array(Product), name : String, price : Float64, quantity : Int32) : String?

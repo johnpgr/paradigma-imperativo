@@ -2,22 +2,32 @@
 require "./terminal"
 require "./inventory"
 
+enum MenuAction
+  RegisterProduct
+  ListProducts
+  RegisterEntry
+  RegisterSale
+  SalesReport
+  RemoveProduct
+  Exit
+end
+
 menu_selected = 0
 menu_items = [
-  "Cadastrar produto",
-  "Listar produtos",
-  "Registrar entrada",
-  "Registrar venda",
-  "Relatório de vendas",
-  "Remover produto",
-  "Sair"
+  {MenuAction::RegisterProduct, "Cadastrar produto"},
+  {MenuAction::ListProducts, "Listar produtos"},
+  {MenuAction::RegisterEntry, "Registrar entrada"},
+  {MenuAction::RegisterSale, "Registrar venda"},
+  {MenuAction::SalesReport, "Relatório de vendas"},
+  {MenuAction::RemoveProduct, "Remover produto"},
+  {MenuAction::Exit, "Sair"},
 ]
 
 products = [] of Product
 sales = [] of Sale
 
+Process.on_terminate { exit }
 at_exit { show_cursor }
-Signal::INT.trap { exit }
 
 loop do
   # 1. Desenhar a tela baseado no estado atual
@@ -28,9 +38,9 @@ loop do
 
   menu_items.each_with_index do |item, index|
     if index == menu_selected
-      puts "> #{item}".colorize(:green)
+      puts "> #{item[1]}".colorize(:green)
     else
-      puts "  #{item}"
+      puts "  #{item[1]}"
     end
   end
 
@@ -51,15 +61,15 @@ loop do
     clear_screen
     show_cursor
 
-    case menu_items[menu_selected]
+    case menu_items[menu_selected][0]
 
-    when "Cadastrar produto"
+    when MenuAction::RegisterProduct
       name = prompt("Nome: ")
       price = prompt_float("Preço unitário: ")
       quantity = prompt_int("Quantidade inicial: ")
       print_result(register_product(products, name, price, quantity))
 
-    when "Listar produtos"
+    when MenuAction::ListProducts
       puts "%-7s %-20s %9s %8s" % {"Código", "Nome", "Preço", "Saldo"}
 
       products.each do |product|
@@ -70,22 +80,21 @@ loop do
         else
           puts line
         end
-
       end
 
       puts "\nNenhum produto cadastrado." if products.empty?
 
-    when "Registrar entrada"
+    when MenuAction::RegisterEntry
       code = prompt_int("Código do produto: ")
       quantity = prompt_int("Quantidade recebida: ")
       print_result(register_entry(products, code, quantity))
 
-    when "Registrar venda"
+    when MenuAction::RegisterSale
       code = prompt_int("Código do produto: ")
       quantity = prompt_int("Quantidade vendida: ")
       print_result(register_sale(products, sales, code, quantity))
 
-    when "Relatório de vendas"
+    when MenuAction::SalesReport
       puts "%-7s %-20s %5s %12s" % {"Código", "Produto", "Qtd.", "Total"}
 
       sales.each do |sale|
@@ -96,11 +105,11 @@ loop do
       puts "\nItens vendidos: #{items}"
       puts "Valor total:    R$ #{"%.2f" % total}".colorize.bold
 
-    when "Remover produto"
+    when MenuAction::RemoveProduct
       code = prompt_int("Código do produto: ")
       print_result(remove_product(products, code))
 
-    when "Sair"
+    when MenuAction::Exit
       break
 
     end
