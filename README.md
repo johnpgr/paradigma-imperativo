@@ -2,11 +2,13 @@
 
 Atividade Avaliativa AV1 da disciplina Paradigmas de Programação (UNAMA). Prof. Rodrigo Medeiros Costa.
 
-**Integrante:** NOME COMPLETO ([@johnpgr](https://github.com/johnpgr))
+**Integrante:** João Paulo Greidinger dos Reis ([@johnpgr](https://github.com/johnpgr))
 
 **Linguagem:** [Crystal](https://crystal-lang.org), com autorização do professor no lugar de C ou Python.
 
 **Vídeo de demonstração:** LINK DO VÍDEO
+
+**Contribuição dos integrantes:** trabalho individual. Análise, implementação, README e vídeo feitos por João Paulo Greidinger dos Reis.
 
 ## Descrição do problema
 
@@ -57,11 +59,15 @@ Para executar sem gerar o binário: `crystal run src/main.cr`.
 
 ## Explicação da solução
 
-O programa é uma sequência de instruções dentro de um laço. A cada volta, ele desenha o menu com o estado atual, lê uma tecla, altera o estado conforme a tecla e repete. Todo o estado fica em quatro variáveis declaradas no início de `src/main.cr` (linhas 5 a 8):
+O programa é uma sequência de instruções dentro de um laço. A cada volta, ele desenha o menu com o estado atual, lê uma tecla, altera o estado conforme a tecla e repete. Todo o estado fica em quatro variáveis declaradas no início de `src/main.cr` (linhas 15 a 27):
 
 ```crystal
 menu_selected = 0
-menu_items = ["Cadastrar produto", "Listar produtos", ...]
+menu_items = [
+  {MenuAction::RegisterProduct, "Cadastrar produto"},
+  {MenuAction::ListProducts, "Listar produtos"},
+  # ...
+]
 products = [] of Product
 sales = [] of Sale
 ```
@@ -70,17 +76,17 @@ Os procedimentos recebem essas variáveis como parâmetros e as alteram. Nenhum 
 
 ### Sequência de instruções
 
-O corpo do laço principal (`src/main.cr:13-81`) executa sempre na mesma ordem: (1) limpar a tela e desenhar o menu, (2) ler uma tecla, (3) executar a ação. Dentro de cada ação a ordem também é fixa. Por exemplo, ao registrar uma venda (`src/main.cr:61-64`), o programa lê o código, depois a quantidade, depois chama `register_sale` e por fim mostra o resultado.
+O corpo do laço principal (`src/main.cr:32-118`) executa sempre na mesma ordem: (1) limpar a tela e desenhar o menu, (2) ler uma tecla, (3) executar a ação. Dentro de cada ação a ordem também é fixa. Por exemplo, ao registrar uma venda (`src/main.cr:92-95`), o programa lê o código, depois a quantidade, depois chama `register_sale` e por fim mostra o resultado.
 
 ### Variáveis, atribuição e alteração de estado
 
-- `menu_selected` muda a cada tecla `j` ou `k` (`src/main.cr:31` e `:33`). O operador `%` faz a seleção voltar ao início quando passa do último item.
-- `product.quantity += quantity` soma ao saldo na entrada de estoque (`src/inventory.cr:44`).
-- `product.quantity -= quantity` diminui o saldo na venda (`src/inventory.cr:54`).
-- `products << ...` e `sales << ...` acrescentam registros às listas (`src/inventory.cr:28` e `:55`).
-- `products.delete(product)` remove um registro (`src/inventory.cr:76`).
+- `menu_selected` muda a cada tecla `j` ou `k` (`src/main.cr:51` e `:54`). O operador `%` faz a seleção voltar ao início quando passa do último item.
+- `product.quantity += quantity` soma ao saldo na entrada de estoque (`src/inventory.cr:53`).
+- `product.quantity -= quantity` diminui o saldo na venda (`src/inventory.cr:65`).
+- `products << ...` e `sales << ...` acrescentam registros às listas (`src/inventory.cr:34` e `:66`).
+- `products.delete(product)` remove um registro (`src/inventory.cr:91`).
 
-`Product` é uma classe (`src/inventory.cr:4-12`) porque `product.quantity -= n` precisa alterar o produto que está guardado na lista. Com uma `struct`, `find_product` retornaria uma cópia, e a alteração seria perdida.
+`Product` é uma classe (`src/inventory.cr:3-11`) porque `product.quantity -= n` precisa alterar o produto que está guardado na lista. Com uma `struct`, `find_product` retornaria uma cópia, e a alteração seria perdida.
 
 **Exemplo de alteração de estado:**
 
@@ -94,10 +100,10 @@ O corpo do laço principal (`src/main.cr:13-81`) executa sempre na mesma ordem: 
 
 ### Estruturas de decisão
 
-- `case read_key` escolhe o que fazer com a tecla lida (`src/main.cr:29-80`), e `case menu_items[menu_selected]` escolhe a ação do menu (`src/main.cr:40-78`).
-- `if index == menu_selected` destaca o item selecionado (`src/main.cr:21`).
-- `if product.quantity <= LOW_STOCK` mostra em vermelho os produtos com estoque baixo (`src/main.cr:50`).
-- As regras de negócio são cláusulas de guarda com `return ... if`. Por exemplo, em `register_sale` (`src/inventory.cr:50-52`), cada condição falsa encerra o procedimento com uma mensagem de erro antes de alterar o estado:
+- `case read_key` escolhe o que fazer com a tecla lida (`src/main.cr:48-118`), e `case menu_items[menu_selected][0]` escolhe a ação do menu (`src/main.cr:64-115`).
+- `if index == menu_selected` destaca o item selecionado (`src/main.cr:40`).
+- `if product.quantity <= LOW_STOCK` mostra em vermelho os produtos com estoque baixo (`src/main.cr:78`).
+- As regras de negócio são cláusulas de guarda com `return ... if`. Por exemplo, em `register_sale` (`src/inventory.cr:61-63`), cada condição falsa encerra o procedimento com uma mensagem de erro antes de alterar o estado:
 
 ```crystal
 return "Produto não encontrado." unless product
@@ -107,27 +113,27 @@ return "Saldo insuficiente: #{product.quantity} em estoque." if quantity > produ
 
 ### Estruturas de repetição
 
-- `loop do ... end` é o laço principal do programa (`src/main.cr:13`). Ele termina com `break` quando o usuário escolhe sair.
-- `each_with_index` percorre os itens do menu para desenhá-los (`src/main.cr:20`).
-- `find_product` faz uma busca linear: percorre a lista e retorna o primeiro produto com o código pedido (`src/inventory.cr:32-37`).
-- `register_product` percorre a lista para achar o próximo código livre (`src/inventory.cr:23-26`).
-- `sales_summary` usa dois acumuladores, `items` e `total`, que são atualizados a cada venda (`src/inventory.cr:60-68`).
-- `prompt_int` e `prompt_float` repetem a pergunta até o usuário digitar um número válido (`src/terminal.cr:17-31`).
+- `loop do ... end` é o laço principal do programa (`src/main.cr:32`). Ele termina com `break` quando o usuário aperta `q` ou escolhe "Sair" (`src/main.cr:57` e `:113`).
+- `each_with_index` percorre os itens do menu para desenhá-los (`src/main.cr:39`).
+- `find_product` faz uma busca linear: percorre a lista e retorna o primeiro produto com o código pedido (`src/inventory.cr:39-44`).
+- `register_product` percorre a lista para achar o próximo código livre (`src/inventory.cr:29-32`).
+- `sales_summary` usa dois acumuladores, `items` e `total`, que são atualizados a cada venda (`src/inventory.cr:72-82`).
+- `prompt_int` e `prompt_float` repetem a pergunta até o usuário digitar um número válido (`src/terminal.cr:29-45`).
 
 ### Funções e procedimentos
 
 | Procedimento | Arquivo | O que faz |
 |---|---|---|
-| `register_product` | `src/inventory.cr:18` | Valida os dados e acrescenta um produto |
-| `find_product` | `src/inventory.cr:32` | Busca um produto pelo código |
-| `register_entry` | `src/inventory.cr:39` | Soma uma quantidade ao saldo |
-| `register_sale` | `src/inventory.cr:48` | Diminui o saldo e registra a venda |
-| `sales_summary` | `src/inventory.cr:60` | Calcula os itens vendidos e o valor total |
-| `remove_product` | `src/inventory.cr:71` | Remove um produto com saldo zero |
+| `register_product` | `src/inventory.cr:24` | Valida os dados e acrescenta um produto |
+| `find_product` | `src/inventory.cr:39` | Busca um produto pelo código |
+| `register_entry` | `src/inventory.cr:47` | Soma uma quantidade ao saldo |
+| `register_sale` | `src/inventory.cr:58` | Diminui o saldo e registra a venda |
+| `sales_summary` | `src/inventory.cr:72` | Calcula os itens vendidos e o valor total |
+| `remove_product` | `src/inventory.cr:85` | Remove um produto com saldo zero |
 | `hide_cursor`, `show_cursor`, `clear_screen` | `src/terminal.cr:7-17` | Controlam visibilidade do cursor e limpeza de tela |
-| `read_key` | `src/terminal.cr:20` | Lê uma tecla sem esperar o Enter |
-| `prompt`, `prompt_int`, `prompt_float` | `src/terminal.cr:24-43` | Leem um texto ou um número |
-| `print_result` | `src/terminal.cr:50` | Mostra a mensagem de sucesso ou de erro |
+| `read_key`, `wait_for_key` | `src/terminal.cr:20` e `:47` | Leem uma tecla sem esperar o Enter |
+| `prompt`, `prompt_int`, `prompt_float` | `src/terminal.cr:24-45` | Leem um texto ou um número |
+| `print_result` | `src/terminal.cr:52` | Mostra a mensagem de sucesso ou de erro |
 
 Os procedimentos que alteram o estado retornam `String?`: uma mensagem de erro, ou `nil` quando a operação é realizada. Assim, `main.cr` trata o resultado de todas as operações da mesma forma, com `print_result`.
 
@@ -145,7 +151,7 @@ Os procedimentos que alteram o estado retornam `String?`: uma mensagem de erro, 
 
 - No modo raw, `Enter` envia `\r` e não `\n`, e a quebra de linha não volta o cursor ao início. Por isso o modo raw ficou restrito à leitura de uma tecla.
 - Com `Product` como `struct`, alterar o saldo de um produto encontrado na lista não tinha efeito, porque a alteração era feita em uma cópia. A solução foi usar uma classe.
-- Garantir que o cursor do terminal volte a aparecer quando o programa termina com `Ctrl+C` (`at_exit` e `Signal::INT.trap` em `src/main.cr:10-11`).
+- Garantir que o cursor do terminal volte a aparecer quando o programa termina com `Ctrl+C` (`Process.on_terminate` e `at_exit` em `src/main.cr:29-30`).
 
 **Melhorias possíveis**
 
