@@ -4,7 +4,7 @@ Atividade Avaliativa AV1 da disciplina Paradigmas de Programação (UNAMA). Prof
 
 **Integrante:** João Paulo Greidinger dos Reis ([@johnpgr](https://github.com/johnpgr))
 
-**Linguagem:** [Crystal](https://crystal-lang.org), com autorização do professor no lugar de C ou Python.
+**Linguagem:** [Crystal](https://crystal-lang.org)
 
 **Vídeo de demonstração:** 
 
